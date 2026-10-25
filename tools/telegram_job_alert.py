@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
 Telegram Job Alert Notifier — Side Job & Freelance Edition (Indonesia Focus)
-Mencari lowongan kerja sampingan di Indonesia (100% remote / virtual, tanpa interview onsite).
-Mencakup tugas Non-IT (Data Entry, Admin, Virtual Assistant, AI Annotation)
-dan tugas IT (Web Scraping, Python, Java Web Developer Freelance).
+Mode 1: Cronjob / Sekali jalan (`python tools/telegram_job_alert.py`)
+Mode 2: Interaktif Bot Telegram (`python tools/telegram_job_alert.py --bot`)
+        Anda bisa panggil manual kapan saja via chat Telegram dengan command `/cari` atau `/cari <kata kunci>`.
 """
 
 import argparse
@@ -13,6 +13,7 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 import urllib.parse
 import urllib.request
 from datetime import datetime
@@ -28,7 +29,6 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8")
 
 
-# Kata kunci negatif yang mengindikasikan wajib datang ke kantor / interview tatap muka
 EXCLUDED_KEYWORDS = [
     "interview onsite",
     "onsite interview",
@@ -64,7 +64,6 @@ def get_settings():
     if not bun_bin and cfg.has_section("SETTINGS") and "BUN_BIN" in cfg["SETTINGS"]:
         bun_bin = cfg["SETTINGS"]["BUN_BIN"].strip()
 
-    # Default queries: Fokus Indonesia, sampingan Non-IT & IT freelance
     linkedin_queries = [
         "data entry",
         "virtual assistant",
@@ -179,7 +178,7 @@ def is_job_eligible(job: dict) -> bool:
     return True
 
 
-def search_linkedin_single(bun_bin: str, query: str, location: str) -> list[dict]:
+def search_linkedin_single(bun_bin: str, query: str, location: str, limit: int = 8) -> list[dict]:
     cli_path = ROOT_DIR / ".agents" / "skills" / "linkedin-search" / "cli" / "src" / "cli.ts"
     if not cli_path.exists():
         return []
@@ -190,8 +189,8 @@ def search_linkedin_single(bun_bin: str, query: str, location: str) -> list[dict
         "-q", query,
         "-l", location,
         "--remote", "remote",
-        "--jobage", "3",
-        "--limit", "8",
+        "--jobage", "7",
+        "--limit", str(limit),
         "--format", "json"
     ]
     try:
@@ -210,7 +209,7 @@ def search_linkedin_single(bun_bin: str, query: str, location: str) -> list[dict
         return []
 
 
-def search_freehire_single(bun_bin: str, query: str) -> list[dict]:
+def search_freehire_single(bun_bin: str, query: str, limit: int = 6) -> list[dict]:
     cli_path = ROOT_DIR / ".agents" / "skills" / "freehire-search" / "cli" / "src" / "cli.ts"
     if not cli_path.exists():
         return []
@@ -220,7 +219,7 @@ def search_freehire_single(bun_bin: str, query: str) -> list[dict]:
         "search",
         "-q", query,
         "--remote", "remote",
-        "--limit", "6",
+        "--limit", str(limit),
         "--format", "json"
     ]
     try:
@@ -248,37 +247,25 @@ def escape_html(text: str) -> str:
 def categorize_job(title: str) -> str:
     """Kelompokkan lowongan ke kategori pekerjaan sampingan."""
     t = title.lower()
-
-    # 1. Non-IT: Data Entry, Virtual Assistant, Admin
     if any(k in t for k in ["data entry", "entry data", "input data", "virtual assistant", "assistant", "admin", "registration", "transkrip"]):
         return "📋 Data Entry & Admin Online (Non-IT)"
-
-    # 2. Non-IT / Semi-Tech: Data Annotation & AI Training
     elif any(k in t for k in ["annotat", "ai training", "labeling", "labelling", "evaluat", "prompt", "content review", "ai trainer", "annotator"]):
         return "🏷️ Data Annotation & AI Training"
-
-    # 3. Tech: Web Scraping & Data Extraction (Niche per-project/bot)
     elif any(k in t for k in ["scrap", "crawl", "extract", "parser", "playwright", "selenium"]):
         return "🕸️ Web Scraping & Data Extraction"
-
-    # 4. Tech: Java Web & Backend Development
     elif any(k in t for k in ["java", "spring"]):
         return "☕ Java Web Developer (Freelance/Part-time)"
-
-    # 5. Tech: Python & Scripting Automation
     elif any(k in t for k in ["python", "django", "fastapi", "flask", "bot", "etl"]):
         return "🐍 Python Automation & Bot (Side-Gig)"
-
     else:
         return "💼 Pekerjaan Sampingan Fleksibel Lainnya"
 
 
-def format_jobs_list_message(jobs: list[dict], date_str: str) -> list[str]:
+def format_jobs_list_message(jobs: list[dict], date_str: str, custom_query: str = None) -> list[str]:
     """Format daftar lowongan menjadi pesan list Telegram berstruktur pohon per kategori."""
     if not jobs:
         return []
 
-    # Kelompokkan jobs berdasarkan kategori yang terurut
     category_order = [
         "📋 Data Entry & Admin Online (Non-IT)",
         "🏷️ Data Annotation & AI Training",
@@ -294,11 +281,12 @@ def format_jobs_list_message(jobs: list[dict], date_str: str) -> list[str]:
         grouped.setdefault(cat, []).append(j)
 
     messages = []
+    title_suffix = f" (Kata Kunci: <i>{escape_html(custom_query)}</i>)" if custom_query else ""
     header = (
-        f"🤖 <b>JOB SAMPINGAN INDONESIA (100% REMOTE)</b>\n"
+        f"🤖 <b>REKOMENDASI JOB SAMPINGAN (100% REMOTE)</b>{title_suffix}\n"
         f"📅 <i>{date_str}</i>\n"
-        f"✅ <i>Filter: Tanpa Interview Onsite | Jam Fleksibel</i>\n\n"
-        f"🎯 <b>{len(jobs)} Lowongan Sampingan Baru Ditemukan:</b>\n\n"
+        f"✅ <i>Filter: Tanpa Interview Onsite | WFH Fleksibel</i>\n\n"
+        f"🎯 <b>{len(jobs)} Lowongan Ditemukan:</b>\n\n"
     )
 
     current_chunk = header
@@ -334,7 +322,7 @@ def format_jobs_list_message(jobs: list[dict], date_str: str) -> list[str]:
         else:
             current_chunk += block
 
-    footer = f"💡 <i>Tips: Cocok dijadikan kerjaan sampingan tanpa mengganggu job Java Developer utama Anda.</i>"
+    footer = f"💡 <i>Tips: Waktu fleksibel, cocok sebagai sampingan dari pekerjaan utama Anda.</i>"
     if len(current_chunk) + len(footer) <= 4000:
         current_chunk += footer
         messages.append(current_chunk.rstrip())
@@ -345,34 +333,23 @@ def format_jobs_list_message(jobs: list[dict], date_str: str) -> list[str]:
     return messages
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Telegram Job Alert Notifier — Side Job Edition")
-    parser.add_argument("--dry-run", action="store_true", help="Print formatted message to console without sending to Telegram")
-    parser.add_argument("--force", action="store_true", help="Ignore seen jobs cache")
-    parser.add_argument("--test", action="store_true", help="Send a test message to Telegram to verify credentials")
-    args = parser.parse_args()
-
-    settings = get_settings()
-    token = settings["token"]
-    chat_id = settings["chat_id"]
-    bun_bin = settings["bun_bin"]
-    location = settings["location"]
-
-    if args.test:
-        test_msg = "🔔 <b>Test Notifikasi: Bot Side Job Finder</b>\nKoneksi ke bot Telegram berhasil!"
-        if send_telegram_notification(token, chat_id, test_msg):
-            print("Pesan tes berhasil dikirim ke Telegram!")
-            return 0
-        else:
-            print("Gagal mengirim pesan tes. Periksa kembali token dan chat_id.", file=sys.stderr)
-            return 1
-
-    seen = set() if args.force else load_seen_jobs()
+def execute_job_pipeline(token: str, chat_id: str, bun_bin: str, location: str,
+                         linkedin_queries: list, freehire_queries: list,
+                         custom_query: str = None, force: bool = False, dry_run: bool = False) -> int:
+    """Menjalankan proses pencarian lowongan dan mengirimkan hasilnya."""
+    seen = set() if force else load_seen_jobs()
     new_jobs = []
 
-    # 1. Search LinkedIn (Fokus Indonesia & Remote)
-    print(f"[TelegramAlert] Mencari lowongan sampingan di LinkedIn (Lokasi: {location})...")
-    for q in settings["linkedin_queries"]:
+    # Tentukan query
+    if custom_query:
+        l_queries = [custom_query]
+        f_queries = [custom_query]
+    else:
+        l_queries = linkedin_queries
+        f_queries = freehire_queries
+
+    print(f"[TelegramAlert] Mencari lowongan di LinkedIn (Lokasi: {location})...")
+    for q in l_queries:
         results = search_linkedin_single(bun_bin, q, location)
         for j in results:
             if not is_job_eligible(j):
@@ -389,9 +366,8 @@ def main():
                     "source": "LinkedIn"
                 })
 
-    # 2. Search Freehire (Remote Freelance Tech)
-    print("[TelegramAlert] Mencari lowongan remote di Freehire...")
-    for q in settings["freehire_queries"]:
+    print("[TelegramAlert] Mencari lowongan di Freehire...")
+    for q in f_queries:
         results = search_freehire_single(bun_bin, q)
         for j in results:
             if not is_job_eligible(j):
@@ -408,14 +384,19 @@ def main():
                     "source": "Freehire"
                 })
 
+    now_str = datetime.now().strftime("%d %b %Y %H:%M")
+
     if not new_jobs:
-        print("[TelegramAlert] Tidak ada lowongan sampingan baru yang ditemukan.")
+        msg = f"ℹ️ <b>Tidak ada lowongan sampingan baru saat ini.</b>\nSemua lowongan aktif sudah pernah dikirim atau belum ada postingan baru."
+        if dry_run:
+            print(msg)
+        else:
+            send_telegram_notification(token, chat_id, msg)
         return 0
 
-    now_str = datetime.now().strftime("%d %b %Y")
-    messages = format_jobs_list_message(new_jobs, now_str)
+    messages = format_jobs_list_message(new_jobs, now_str, custom_query)
 
-    if args.dry_run:
+    if dry_run:
         print("\n=== FORMATTED TELEGRAM MESSAGE (DRY-RUN) ===\n")
         for idx, m in enumerate(messages, 1):
             print(f"--- Bagian {idx} ---")
@@ -436,6 +417,151 @@ def main():
     else:
         print("[TelegramAlert] Sebagian atau seluruh pesan gagal terkirim.", file=sys.stderr)
         return 1
+
+
+def start_bot_listener(token: str, authorized_chat_id: str, bun_bin: str, location: str,
+                       linkedin_queries: list, freehire_queries: list):
+    """
+    Mode daemon interaktif: Bot standby mendengarkan perintah langsung dari Telegram.
+    Perintah yang didukung:
+    - /cari : mencari semua lowongan sampingan default
+    - /cari <keyword> : mencari lowongan sampingan dengan kata kunci spesifik
+    - /status : cek status bot & jumlah seen jobs
+    - /help : panduan
+    """
+    print(f"[BotListener] Bot polling aktif! Anda bisa panggil langsung dari Telegram (/cari, /status, /help).")
+    print(f"[BotListener] Authorized Chat ID: {authorized_chat_id}")
+
+    offset = 0
+    try:
+        init_url = f"https://api.telegram.org/bot{token}/getUpdates?offset=-1"
+        with urllib.request.urlopen(init_url, timeout=10) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            if data.get("result"):
+                offset = data["result"][-1]["update_id"] + 1
+    except Exception:
+        pass
+
+    while True:
+        try:
+            url = f"https://api.telegram.org/bot{token}/getUpdates?timeout=30"
+            if offset:
+                url += f"&offset={offset}"
+            req = urllib.request.Request(url)
+            with urllib.request.urlopen(req, timeout=35) as resp:
+                updates = json.loads(resp.read().decode("utf-8")).get("result", [])
+                for upd in updates:
+                    offset = upd["update_id"] + 1
+                    msg = upd.get("message") or upd.get("edited_message")
+                    if not msg or not msg.get("text"):
+                        continue
+
+                    sender_chat_id = str(msg["chat"]["id"])
+                    text = msg["text"].strip()
+
+                    # Keamanan: Hanya izinkan chat ID terdaftar
+                    if authorized_chat_id and sender_chat_id != authorized_chat_id:
+                        print(f"[BotListener] Mengabaikan pesan dari chat_id asing: {sender_chat_id}")
+                        continue
+
+                    print(f"[BotListener] Menerima perintah: {text}")
+
+                    if text.startswith("/start") or text.startswith("/help"):
+                        help_text = (
+                            "👋 <b>Halo Duta! Bot Find Job siap melayani Anda.</b>\n\n"
+                            "Gunakan perintah berikut kapan saja tanpa menunggu cron:\n\n"
+                            "• <code>/cari</code> — Cari seluruh rekomendasi lowongan sampingan baru (Data Entry, Annotation, Scraping, Java)\n"
+                            "• <code>/cari &lt;keyword&gt;</code> — Cari lowongan dengan kata kunci spesifik (misal: <code>/cari java</code> atau <code>/cari data entry</code>)\n"
+                            "• <code>/status</code> — Cek status koneksi bot dan jumlah database riwayat\n"
+                            "• <code>/help</code> — Bantuan penggunaan bot"
+                        )
+                        send_telegram_notification(token, sender_chat_id, help_text)
+
+                    elif text.startswith("/status"):
+                        seen = load_seen_jobs()
+                        status_text = (
+                            f"🤖 <b>STATUS BOT FIND JOB</b>\n"
+                            f"✅ Status: Aktif & Berjalan Normal\n"
+                            f"📍 Target Lokasi: {location} (100% Remote / Online)\n"
+                            f"📊 Total Lowongan Pernah Dikirim: {len(seen)} item\n"
+                            f"💡 <i>Ketik /cari untuk mengambil lowongan terbaru sekarang.</i>"
+                        )
+                        send_telegram_notification(token, sender_chat_id, status_text)
+
+                    elif text.startswith("/cari") or text.startswith("/jobs") or text.startswith("/sampingan"):
+                        # Cek apakah ada query kustom
+                        parts = text.split(maxsplit=1)
+                        custom_q = parts[1].strip() if len(parts) > 1 else None
+
+                        prompt_msg = f"⏳ <i>Sedang mencari lowongan{' untuk <b>' + escape_html(custom_q) + '</b>' if custom_q else ''}... Mohon tunggu sebentar.</i>"
+                        send_telegram_notification(token, sender_chat_id, prompt_msg)
+
+                        # Jalankan pencarian
+                        execute_job_pipeline(
+                            token=token,
+                            chat_id=sender_chat_id,
+                            bun_bin=bun_bin,
+                            location=location,
+                            linkedin_queries=linkedin_queries,
+                            freehire_queries=freehire_queries,
+                            custom_query=custom_q,
+                            force=False,
+                            dry_run=False
+                        )
+
+        except urllib.error.URLError:
+            time.sleep(3)
+        except Exception as e:
+            print(f"[BotListener] Error polling: {e}", file=sys.stderr)
+            time.sleep(3)
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Telegram Job Alert Notifier — Side Job Edition")
+    parser.add_argument("--bot", action="store_true", help="Jalankan bot dalam mode interaktif (listening perintah /cari dari Telegram)")
+    parser.add_argument("--dry-run", action="store_true", help="Print formatted message to console without sending to Telegram")
+    parser.add_argument("--force", action="store_true", help="Ignore seen jobs cache")
+    parser.add_argument("--test", action="store_true", help="Send a test message to Telegram to verify credentials")
+    parser.add_argument("--query", "-q", type=str, default=None, help="Pencarian spesifik untuk satu query tertentu")
+    args = parser.parse_args()
+
+    settings = get_settings()
+    token = settings["token"]
+    chat_id = settings["chat_id"]
+    bun_bin = settings["bun_bin"]
+    location = settings["location"]
+
+    if args.test:
+        test_msg = "🔔 <b>Test Notifikasi: Bot Side Job Finder</b>\nKoneksi ke bot Telegram berhasil!"
+        if send_telegram_notification(token, chat_id, test_msg):
+            print("Pesan tes berhasil dikirim ke Telegram!")
+            return 0
+        else:
+            print("Gagal mengirim pesan tes. Periksa kembali token dan chat_id.", file=sys.stderr)
+            return 1
+
+    if args.bot:
+        start_bot_listener(
+            token=token,
+            authorized_chat_id=chat_id,
+            bun_bin=bun_bin,
+            location=location,
+            linkedin_queries=settings["linkedin_queries"],
+            freehire_queries=settings["freehire_queries"]
+        )
+        return 0
+
+    return execute_job_pipeline(
+        token=token,
+        chat_id=chat_id,
+        bun_bin=bun_bin,
+        location=location,
+        linkedin_queries=settings["linkedin_queries"],
+        freehire_queries=settings["freehire_queries"],
+        custom_query=args.query,
+        force=args.force,
+        dry_run=args.dry_run
+    )
 
 
 if __name__ == "__main__":
