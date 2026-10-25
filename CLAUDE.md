@@ -23,8 +23,8 @@ This repo is a job application workspace. Claude acts as a career advisor and ap
   | Indonesian | Native |
   | English | Professional working proficiency |
 - **CV language:** English
-- **Status:** Employed (Scraper Operational at PT eBdesk Teknologi) & Undergraduate Student
-- **LinkedIn headline:** "Mahasiswa Sistem Informasi | Scraper Operational | Backend & Automation Enthusiast"
+- **Status:** Employed (Junior Java Web Developer at PT Cipta Piranti Sejahtera / Accurate) & Undergraduate Student
+- **LinkedIn headline:** "Junior Java Web Developer at Accurate (PT Cipta Piranti Sejahtera) | S1 Information Systems | Backend & Automation"
 
 ### Education
 - **Bachelor of Information Systems (S1)** (2024 - Present) - Universitas Pelita Harapan (UPH)
@@ -33,7 +33,11 @@ This repo is a job application workspace. Claude acts as a career advisor and ap
   - Topics: Software Engineering fundamentals, Web Programming, 6-Month Industrial Internship at PT eBdesk Teknologi
 
 ### Professional Experience
-- **Scraper Operational** (2023 - Present) - **PT eBdesk Teknologi** (Tangerang Selatan, Banten, Indonesia)
+- **Junior Java Web Developer** (Maret 2026 - Present) - **PT Cipta Piranti Sejahtera (Accurate)** (Indonesia)
+  - Developing and maintaining backend web modules and application logic using Java.
+  - Working on enterprise/accounting web systems, database transactions, and API endpoints.
+  - Ensuring system reliability, performance optimization, and codebase maintainability.
+- **Scraper Operational** (2023 - 2026) - **PT eBdesk Teknologi** (Tangerang Selatan, Banten, Indonesia)
   - Developed and maintained web crawling engines using Python, Playwright, and Selenium for automated data collection.
   - Optimized backend processing through asynchronous concurrency (Async/Await) in Python.
   - Monitored crawling pipelines, ensuring data stability, schema conformance, and quality control across runs.
@@ -43,9 +47,9 @@ This repo is a job application workspace. Claude acts as a career advisor and ap
   - Developed internal web management tools using PHP & HTML to enhance operational workflows and team productivity.
 
 ### Technical Skills
-- **Primary:** Python (Async/Await, Web Scraping, Automation), PHP, Java, JavaScript, SQL
-- **Secondary:** Vue.js, Node.js, HTML5, CSS3
-- **Domain:** Web Scraping & Data Extraction, Backend Architecture & Automation, Linux Server Administration, Data Processing & ETL
+- **Primary:** Java (Java Web / Spring), Python (Async/Await, Web Scraping, Automation), SQL (PostgreSQL, MySQL), PHP, JavaScript
+- **Secondary:** Vue.js, Node.js, HTML5, CSS3, Docker
+- **Domain:** Java Backend Development, Web Scraping & Crawling Architecture, Task Automation & Linux Administration, Data ETL
 - **Software:** Playwright, Selenium, Docker, Kubernetes (monitoring with Lens), Elasticsearch & Kibana, Telegram Bot API, Git, Linux CLI
 
 ### Certifications
@@ -61,22 +65,23 @@ This repo is a job application workspace. Claude acts as a career advisor and ap
 - **Analytical & Problem Solver** - Skilled in complex debugging, root-cause diagnosis, and engineering scalable technical solutions.
 - **Collaborative Communicator** - Bridges operational requirements with technical systems to ensure project milestones are delivered reliably.
 - **Fast Learner & Proactive** - Highly enthusiastic about exploring modern technologies, modern JavaScript stacks, and backend frameworks.
-- **Strengths:** Asynchronous backend programming, web automation & crawler engineering, Linux server management, data quality assurance, rapid adaptability.
-- **Growth areas:** Deepening cloud-native architecture (AWS/GCP), microservices orchestration, advanced frontend frameworks (Vue.js/React).
-- **Thrives in:** Collaborative, engineering-focused teams tackling high-volume data, backend automation, and scalable web services.
+- **Strengths:** Backend Java & Python development, web crawling & automation engineering, Linux administration, high independence & adaptability.
+- **Growth areas:** Advanced cloud architectures, microservices scalability, full-stack reactive frameworks.
+- **Thrives in:** Autonomous, result-oriented freelance/remote setups and engineering teams that value high-quality output and flexibility.
 
 ### What Excites You
 - Building robust data scraping engines and automation bots that solve real-world data bottlenecks.
-- Developing clean, scalable server-side APIs and backend web systems.
-- Exploring modern JavaScript and Python backend ecosystems.
+- Developing clean, scalable server-side APIs and backend web systems in Java and Python.
+- Taking on remote freelance contracts and side projects that generate extra income while broadening engineering skills.
 
 ### Target Sectors
-- Software & Internet Services: Tech startups, SaaS companies, Data intelligence firms
-- Backend Development & Data Engineering: Roles in Backend Developer, Software Engineer, Web Scraper / Automation Engineer, Data Engineer
+- Freelance & Contractor Platforms: Task-based contracts, hourly side-gigs, part-time developer roles.
+- Web Scraping & Data Extraction: Niche crawling contracts (Playwright, Selenium, Python).
+- Java / Python Backend: Remote side projects, API development, automation bots.
 
 ### Deal-breakers
-- Roles requiring unannounced relocation without company support.
-- Non-technical purely administrative roles with no engineering or coding responsibilities.
+- Mandatory on-site or hybrid office attendance (must be 100% remote with flexible hours so it doesn't conflict with main job at Accurate).
+- Rigid 9-to-5 schedules that require synchronous office presence during business hours.
 
 ## Repo Structure
 - `cv/` - LaTeX CV variants (moderncv template, banking style)

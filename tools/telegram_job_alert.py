@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 Telegram Job Alert Notifier
-Searches for new remote/freelance Python and Web Scraping jobs and sends a clean list
-notification to a Telegram Bot, styled consistently with Duta's productivity reminder tools.
+Searches for new remote/freelance Python, Web Scraping, and Java Web Developer jobs
+and sends a clean list notification to a Telegram Bot, styled consistently with Duta's productivity reminder tools.
 """
 
 import argparse
@@ -44,6 +44,24 @@ def get_settings():
     if not bun_bin and cfg.has_section("SETTINGS") and "BUN_BIN" in cfg["SETTINGS"]:
         bun_bin = cfg["SETTINGS"]["BUN_BIN"].strip()
 
+    freehire_queries = ["web scraping OR scraper", "python automation", "java developer"]
+    linkedin_queries = ["web scraping", "python scraper", "java developer"]
+    linkedin_location = "Remote"
+
+    if cfg.has_section("SEARCH"):
+        if "FREEHIRE_QUERIES" in cfg["SEARCH"]:
+            val = cfg["SEARCH"]["FREEHIRE_QUERIES"].strip()
+            if val:
+                freehire_queries = [q.strip() for q in val.split(",") if q.strip()]
+        if "LINKEDIN_QUERIES" in cfg["SEARCH"]:
+            val = cfg["SEARCH"]["LINKEDIN_QUERIES"].strip()
+            if val:
+                linkedin_queries = [q.strip() for q in val.split(",") if q.strip()]
+        if "LINKEDIN_LOCATION" in cfg["SEARCH"]:
+            val = cfg["SEARCH"]["LINKEDIN_LOCATION"].strip()
+            if val:
+                linkedin_location = val
+
     if not bun_bin:
         # Detect common bun locations
         which_bun = shutil.which("bun")
@@ -59,7 +77,14 @@ def get_settings():
             else:
                 bun_bin = "bun"
 
-    return token, chat_id, bun_bin
+    return {
+        "token": token,
+        "chat_id": chat_id,
+        "bun_bin": bun_bin,
+        "freehire_queries": freehire_queries,
+        "linkedin_queries": linkedin_queries,
+        "linkedin_location": linkedin_location,
+    }
 
 
 def send_telegram_notification(token: str, chat_id: str, text: str) -> bool:
@@ -113,51 +138,16 @@ def parse_job_results(output: str) -> list[dict]:
     return []
 
 
-def search_freehire(bun_bin: str) -> list[dict]:
-    """Cari lowongan remote di freehire.me."""
+def search_freehire_single(bun_bin: str, query: str) -> list[dict]:
     cli_path = ROOT_DIR / ".agents" / "skills" / "freehire-search" / "cli" / "src" / "cli.ts"
     if not cli_path.exists():
-        print(f"[TelegramAlert] CLI not found: {cli_path}", file=sys.stderr)
         return []
 
     cmd = [
         bun_bin, "run", str(cli_path),
         "search",
-        "-q", "web scraping OR python OR scraper",
+        "-q", query,
         "--remote", "remote",
-        "--limit", "15",
-        "--format", "json"
-    ]
-    try:
-        res = subprocess.run(
-            cmd,
-            cwd=str(ROOT_DIR),
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            check=True
-        )
-        return parse_job_results(res.stdout)
-    except Exception as e:
-        print(f"[TelegramAlert] Error running freehire-search: {e}", file=sys.stderr)
-        return []
-
-
-def search_linkedin(bun_bin: str) -> list[dict]:
-    """Cari lowongan remote di LinkedIn."""
-    cli_path = ROOT_DIR / ".agents" / "skills" / "linkedin-search" / "cli" / "src" / "cli.ts"
-    if not cli_path.exists():
-        print(f"[TelegramAlert] CLI not found: {cli_path}", file=sys.stderr)
-        return []
-
-    cmd = [
-        bun_bin, "run", str(cli_path),
-        "search",
-        "-q", "python scraper",
-        "-l", "Remote",
-        "--remote", "remote",
-        "--jobage", "3",
         "--limit", "10",
         "--format", "json"
     ]
@@ -173,7 +163,38 @@ def search_linkedin(bun_bin: str) -> list[dict]:
         )
         return parse_job_results(res.stdout)
     except Exception as e:
-        print(f"[TelegramAlert] Error running linkedin-search: {e}", file=sys.stderr)
+        print(f"[TelegramAlert] Freehire search error for '{query}': {e}", file=sys.stderr)
+        return []
+
+
+def search_linkedin_single(bun_bin: str, query: str, location: str) -> list[dict]:
+    cli_path = ROOT_DIR / ".agents" / "skills" / "linkedin-search" / "cli" / "src" / "cli.ts"
+    if not cli_path.exists():
+        return []
+
+    cmd = [
+        bun_bin, "run", str(cli_path),
+        "search",
+        "-q", query,
+        "-l", location,
+        "--remote", "remote",
+        "--jobage", "3",
+        "--limit", "8",
+        "--format", "json"
+    ]
+    try:
+        res = subprocess.run(
+            cmd,
+            cwd=str(ROOT_DIR),
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            check=True
+        )
+        return parse_job_results(res.stdout)
+    except Exception as e:
+        print(f"[TelegramAlert] LinkedIn search error for '{query}': {e}", file=sys.stderr)
         return []
 
 
@@ -183,43 +204,67 @@ def escape_html(text: str) -> str:
     return str(text).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
+def categorize_job(title: str) -> str:
+    t = title.lower()
+    if any(k in t for k in ["scrap", "crawl", "extract", "parser", "playwright", "selenium"]):
+        return "🕸️ Web Scraping & Automation"
+    elif any(k in t for k in ["java", "spring"]):
+        return "☕ Java & Backend Development"
+    elif any(k in t for k in ["python", "django", "fastapi", "flask", "bot", "etl"]):
+        return "🐍 Python & Backend Engineering"
+    else:
+        return "💻 Remote & Freelance Tech"
+
+
 def format_jobs_list_message(jobs: list[dict], date_str: str) -> list[str]:
-    """Format daftar lowongan menjadi pesan list Telegram berstruktur pohon."""
+    """Format daftar lowongan menjadi pesan list Telegram berstruktur pohon per kategori."""
     if not jobs:
         return []
+
+    # Kelompokkan jobs berdasarkan kategori
+    grouped = {}
+    for j in jobs:
+        cat = categorize_job(j["title"])
+        grouped.setdefault(cat, []).append(j)
 
     messages = []
     header = (
         f"🤖 <b>BOT FIND JOB — REKOMENDASI HARIAN</b>\n"
         f"📅 <i>{date_str}</i>\n\n"
-        f"💻 <b>LOWONGAN REMOTE / FREELANCE BARU</b> — {len(jobs)} posisi\n\n"
+        f"🎯 <b>LOWONGAN REMOTE / FREELANCE BARU</b>: {len(jobs)} posisi\n\n"
     )
 
     current_chunk = header
-    for i, j in enumerate(jobs):
-        is_last = (i == len(jobs) - 1)
-        prefix = "└──" if is_last else "├──"
-        branch = "    " if is_last else "│   "
 
-        title = escape_html(j["title"])
-        company = escape_html(j["company"])
-        location = escape_html(j.get("location") or "Remote")
-        source = escape_html(j.get("source") or "")
-        url = j.get("url") or "#"
+    for cat_name, cat_jobs in grouped.items():
+        cat_header = f"<b>{cat_name}</b> ({len(cat_jobs)} lowongan)\n"
+        items_text = ""
 
-        item_str = (
-            f"<code>{prefix}</code> 💼 <a href=\"{url}\"><b>{title}</b></a>\n"
-            f"<code>{branch}</code> 🏢 {company} | 📍 {location} (<i>{source}</i>)\n"
-        )
+        for i, j in enumerate(cat_jobs):
+            is_last = (i == len(cat_jobs) - 1)
+            prefix = "└──" if is_last else "├──"
+            branch = "    " if is_last else "│   "
 
-        # Telegram message limit is 4096 chars, stay safe at 3800
-        if len(current_chunk) + len(item_str) > 3800:
+            title = escape_html(j["title"])
+            company = escape_html(j["company"])
+            location = escape_html(j.get("location") or "Remote")
+            source = escape_html(j.get("source") or "")
+            url = j.get("url") or "#"
+
+            items_text += (
+                f"<code>{prefix}</code> 💼 <a href=\"{url}\"><b>{title}</b></a>\n"
+                f"<code>{branch}</code> 🏢 {company} | 📍 {location} (<i>{source}</i>)\n"
+            )
+
+        block = cat_header + items_text + "\n"
+
+        if len(current_chunk) + len(block) > 3800:
             messages.append(current_chunk.rstrip())
-            current_chunk = f"<i>(Lanjutan lowongan...)</i>\n\n" + item_str
+            current_chunk = f"<i>(Lanjutan lowongan...)</i>\n\n" + block
         else:
-            current_chunk += item_str
+            current_chunk += block
 
-    footer = f"\n✨ <i>Gunakan framework untuk mengevaluasi & membuat tailored CV.</i>"
+    footer = f"✨ <i>Dipilih khusus untuk mode Full Remote / Freelance tanpa mengganggu primary job.</i>"
     if len(current_chunk) + len(footer) <= 4000:
         current_chunk += footer
         messages.append(current_chunk.rstrip())
@@ -237,7 +282,10 @@ def main():
     parser.add_argument("--test", action="store_true", help="Send a test message to Telegram to verify credentials")
     args = parser.parse_args()
 
-    token, chat_id, bun_bin = get_settings()
+    settings = get_settings()
+    token = settings["token"]
+    chat_id = settings["chat_id"]
+    bun_bin = settings["bun_bin"]
 
     if args.test:
         test_msg = "🔔 <b>Test Notifikasi: Bot Find Job</b>\nKoneksi ke bot Telegram berhasil!"
@@ -252,34 +300,36 @@ def main():
     new_jobs = []
 
     print("[TelegramAlert] Mencari lowongan di Freehire...")
-    freehire_results = search_freehire(bun_bin)
-    for j in freehire_results:
-        jid = f"fh_{j.get('id')}"
-        if jid not in seen:
-            seen.add(jid)
-            new_jobs.append({
-                "id": jid,
-                "title": j.get("title", "No Title"),
-                "company": j.get("company", "Unknown"),
-                "location": j.get("location") or "Remote",
-                "url": j.get("url") or f"https://freehire.me/jobs/{j.get('id')}",
-                "source": "Freehire"
-            })
+    for q in settings["freehire_queries"]:
+        results = search_freehire_single(bun_bin, q)
+        for j in results:
+            jid = f"fh_{j.get('id')}"
+            if jid not in seen:
+                seen.add(jid)
+                new_jobs.append({
+                    "id": jid,
+                    "title": j.get("title", "No Title"),
+                    "company": j.get("company", "Unknown"),
+                    "location": j.get("location") or "Remote",
+                    "url": j.get("url") or f"https://freehire.me/jobs/{j.get('id')}",
+                    "source": "Freehire"
+                })
 
     print("[TelegramAlert] Mencari lowongan di LinkedIn...")
-    linkedin_results = search_linkedin(bun_bin)
-    for j in linkedin_results:
-        jid = f"li_{j.get('id')}"
-        if jid not in seen:
-            seen.add(jid)
-            new_jobs.append({
-                "id": jid,
-                "title": j.get("title", "No Title"),
-                "company": j.get("company", "Unknown"),
-                "location": j.get("location") or "Remote",
-                "url": j.get("url") or f"https://www.linkedin.com/jobs/view/{j.get('id')}",
-                "source": "LinkedIn"
-            })
+    for q in settings["linkedin_queries"]:
+        results = search_linkedin_single(bun_bin, q, settings["linkedin_location"])
+        for j in results:
+            jid = f"li_{j.get('id')}"
+            if jid not in seen:
+                seen.add(jid)
+                new_jobs.append({
+                    "id": jid,
+                    "title": j.get("title", "No Title"),
+                    "company": j.get("company", "Unknown"),
+                    "location": j.get("location") or "Remote",
+                    "url": j.get("url") or f"https://www.linkedin.com/jobs/view/{j.get('id')}",
+                    "source": "LinkedIn"
+                })
 
     if not new_jobs:
         print("[TelegramAlert] Tidak ada lowongan baru yang ditemukan.")

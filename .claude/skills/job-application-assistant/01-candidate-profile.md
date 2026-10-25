@@ -11,8 +11,8 @@ framework_version: 1.1.1
 - **Email:** dutarifki14@gmail.com
 - **LinkedIn:** https://www.linkedin.com/in/duta-rifki-prastio-b86b7a23a/
 - **GitHub:** https://github.com/masdut00
-- **Status:** Employed (Scraper Operational at PT eBdesk Teknologi) & Undergraduate Student (S1 Information Systems at UPH)
-- **Constraints:** Open to On-site (Jabodetabek / Tangerang / Jakarta), Hybrid, and Remote
+- **Status:** Employed (Junior Java Web Developer at PT Cipta Piranti Sejahtera / Accurate) & Undergraduate Student (S1 Information Systems at UPH)
+- **Constraints:** Must be 100% Remote / Freelance / Flexible Schedule (No mandatory on-site office hours)
 
 ### Languages
 | Language | Level | Notes |
@@ -29,7 +29,13 @@ framework_version: 1.1.1
 
 ## Professional Experience
 
-### Scraper Operational - PT eBdesk Teknologi (2023 - Present)
+### Junior Java Web Developer - PT Cipta Piranti Sejahtera (Accurate) (Maret 2026 - Present)
+Indonesia
+- Developing and maintaining backend web modules and application logic using Java.
+- Working on enterprise/accounting web systems, database transactions, and API endpoints.
+- Ensuring system reliability, performance optimization, and codebase maintainability.
+
+### Scraper Operational - PT eBdesk Teknologi (2023 - 2026)
 Tangerang Selatan, Banten, Indonesia
 - Developed and maintained web crawling engines using Python, Playwright, and Selenium for automated data collection.
 - Optimized backend processing through asynchronous concurrency (Async/Await) in Python.
