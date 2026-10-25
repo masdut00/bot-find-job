@@ -4,70 +4,69 @@ framework_version: 1.1.1
 
 # Candidate Profile
 
-<!-- SETUP: This file is populated by running /setup -->
-<!-- After running /setup, all sections will be filled with your actual information -->
-
 ## Identity
-- **Name:** [YOUR_NAME]
-- **Location:** [YOUR_ADDRESS]
-- **Phone:** [YOUR_PHONE]
-- **Email:** [YOUR_EMAIL]
-- **LinkedIn:** [YOUR_LINKEDIN_URL]
-- **GitHub:** [YOUR_GITHUB_URL]
-- **Status:** [YOUR_EMPLOYMENT_STATUS]
-- **Constraints:** [YOUR_COMMUTE_OR_LOCATION_CONSTRAINTS]
+- **Name:** Duta Rifki Prastio
+- **Location:** Tangerang, Banten, Indonesia
+- **Phone:** 089646550299
+- **Email:** dutarifki14@gmail.com
+- **LinkedIn:** https://www.linkedin.com/in/duta-rifki-prastio-b86b7a23a/
+- **GitHub:** https://github.com/masdut00
+- **Status:** Employed (Scraper Operational at PT eBdesk Teknologi) & Undergraduate Student (S1 Information Systems at UPH)
+- **Constraints:** Open to On-site (Jabodetabek / Tangerang / Jakarta), Hybrid, and Remote
 
 ### Languages
-<!-- Every language you can work in professionally, with your honest level. Used by the
-Language Gate in 04-job-evaluation.md and by job-scraper/search-queries.md's query-language
-generation. Omit any language you don't actually work in - an undeclared language is treated as
-a hard no, not a gap to smooth over. -->
-
 | Language | Level | Notes |
 |----------|-------|-------|
-| [LANGUAGE] | [LEVEL, e.g. "Native" / "C2" / "B1/B2 (conversational)"] | [optional] |
+| Indonesian | Native | First language / Bahasa Indonesia |
+| English | Professional working proficiency | Technical documentation, professional communication |
 
 ## Education
 
 | Degree | Period | Institution | Key Topics |
 |--------|--------|-------------|------------|
-| [DEGREE] | [YEARS] | [INSTITUTION] | [TOPICS] |
+| Bachelor of Information Systems (S1) | 2024 - Present | Universitas Pelita Harapan (UPH) | Web Development (HTML, CSS, JS), DBMS & SQL, Programming Algorithms & Logic, SDLC, Systems Analysis & Design |
+| Vocational Diploma in Software Engineering (RPL) | 2020 - 2023 | SMK Negeri 6 Tangerang Selatan | Software Engineering fundamentals, Web Programming, 6-Month Industrial Internship at PT eBdesk Teknologi |
 
 ## Professional Experience
 
-### [JOB_TITLE] - [COMPANY] ([START] - [END])
-[LOCATION]
-- [RESPONSIBILITY_OR_ACHIEVEMENT_1]
-- [RESPONSIBILITY_OR_ACHIEVEMENT_2]
-- [RESPONSIBILITY_OR_ACHIEVEMENT_3]
-
-<!-- Add more roles as needed -->
+### Scraper Operational - PT eBdesk Teknologi (2023 - Present)
+Tangerang Selatan, Banten, Indonesia
+- Developed and maintained web crawling engines using Python, Playwright, and Selenium for automated data collection.
+- Optimized backend processing through asynchronous concurrency (Async/Await) in Python.
+- Monitored crawling pipelines, maintaining data stability, schema conformance, and quality control.
+- Built internal automation engines for Linux Server command execution and automated real-time status reporting via Telegram API.
+- Optimized 5+ production scraping applications and developed automated data quality verification tools.
+- Contributed for 3 months as Data Engineer focused on data transformation and ETL pipelines.
+- Developed internal web management tools using PHP & HTML to enhance operational workflows and team productivity.
 
 ## Independent Projects
-<!-- Projects outside of employment: freelance, open source, personal -->
-- **[PROJECT_NAME]**: [DESCRIPTION]
+- **Web UPH Music**: Platform for music content management focusing on server-side logic stability (PHP & Java). (https://github.com/masdut00/Website-Music-UphFM.git)
+- **Web Aduan Masyarakat**: Public grievance reporting application with database management and user interaction (PHP & JavaScript). (https://github.com/masdut00/AduanMasyarakat.git)
+- **Server Monitoring Automation**: Backend bot for automated Linux server health monitoring and Telegram alerts (Python & Telegram API).
 
 ## Technical Skills
 
 ### Programming & ML
-- **[LANGUAGE]** ([PROFICIENCY]): [FRAMEWORKS_AND_LIBRARIES]
-- [OTHER_SKILLS]
+- **Python** (Advanced): Async/Await, Playwright, Selenium, Web Crawling & Scraping, Automation Scripts
+- **PHP** (Proficient): Backend logic, internal web tools, web applications
+- **Java** (Intermediate): Server logic, object-oriented programming
+- **JavaScript** (Intermediate): Modern JS, DOM, Vue.js, Node.js
+- **SQL** (Proficient): Relational database design, queries, optimization
 
 ### Domain Expertise
-- [DOMAIN_1]
-- [DOMAIN_2]
+- Web Scraping & Crawling Architecture
+- Server-Side Automation & Linux Server Administration
+- Data Processing, ETL & Quality Assurance
+- REST API Integration
 
 ### Software & Tools
-- [TOOL_LIST]
+- Docker, Kubernetes (Lens), Elasticsearch & Kibana, Telegram Bot API, Git, GitHub, Linux CLI
 
 ## Publications
-<!-- List peer-reviewed publications, if any -->
-1. [AUTHOR_LIST] ([YEAR]). [TITLE]. [JOURNAL]. [DOI_LINK]
+None
 
 ## Awards
-- [AWARD] - [EVENT] ([YEAR])
+None
 
 ## References
-- [NAME], [TITLE], [COMPANY] ([EMAIL], [PHONE])
-
-More references available upon request.
+Available upon request.

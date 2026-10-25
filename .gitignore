@@ -34,6 +34,8 @@ linkedin_Profile.pdf
 # fetching service; the .env holding it must never be committed.
 .env
 .env.*
+config.ini
+**/job_scraper/seen_telegram_jobs.json
 
 # Personal photos and signatures
 *.jpg

@@ -1,10 +1,7 @@
-# Job Application Assistant for [YOUR_NAME]
-
-<!-- SETUP: This file is populated by running /setup -->
-<!-- After running /setup, all [PLACEHOLDER] tokens will be replaced with your actual information -->
+# Job Application Assistant for Duta Rifki Prastio
 
 ## Role
-This repo is a job application workspace. Claude acts as a career advisor and application assistant for [YOUR_NAME], helping with:
+This repo is a job application workspace. Claude acts as a career advisor and application assistant for Duta Rifki Prastio, helping with:
 1. **Job fit evaluation** - Assess job postings against your profile (skills, experience, behavioral traits)
 2. **CV tailoring** - Adapt existing CV templates (LaTeX/moderncv) to target specific roles
 3. **Cover letter writing** - Draft targeted cover letters using existing templates (LaTeX)
@@ -13,79 +10,73 @@ This repo is a job application workspace. Claude acts as a career advisor and ap
 
 ## Candidate Profile
 
-<!-- This section is auto-populated by /setup. You can also fill it in manually. -->
-
 ### Identity
-- **Name:** [YOUR_NAME]
-- **Location:** [YOUR_CITY], [YOUR_COUNTRY] ([YOUR_COMMUTE_CONSTRAINTS])
+- **Name:** Duta Rifki Prastio
+- **Location:** Tangerang, Banten, Indonesia (Open to On-site, Hybrid, and Remote roles)
+- **Phone:** 089646550299
+- **Email:** dutarifki14@gmail.com
+- **LinkedIn:** https://www.linkedin.com/in/duta-rifki-prastio-b86b7a23a/
+- **GitHub:** https://github.com/masdut00
 - **Languages:**
   | Language | Level |
   |----------|-------|
-  | [LANGUAGE] | [LEVEL] |
-  <!-- Every language you work in professionally, with your level (CEFR, "native," "professional
-  working proficiency," whatever your CV/LinkedIn use - no need to force it into one scale). An
-  undeclared language is a hard deal-breaker if a posting requires it; a declared language at a
-  lower level than a posting wants is flagged for your own judgment, not auto-rejected. See
-  04-job-evaluation.md's Language Gate. -->
-- **CV language:** [YOUR_CV_LANGUAGE] <!-- English unless your market expects otherwise; /setup asks -->
-
-- **Status:** [YOUR_EMPLOYMENT_STATUS]
-- **LinkedIn headline:** "[YOUR_LINKEDIN_HEADLINE]"
+  | Indonesian | Native |
+  | English | Professional working proficiency |
+- **CV language:** English
+- **Status:** Employed (Scraper Operational at PT eBdesk Teknologi) & Undergraduate Student
+- **LinkedIn headline:** "Mahasiswa Sistem Informasi | Scraper Operational | Backend & Automation Enthusiast"
 
 ### Education
-<!-- List your degrees, most recent first -->
-- **[DEGREE_LEVEL] in [FIELD]** ([YEAR_START]-[YEAR_END]) - [INSTITUTION]
-  - Thesis: "[THESIS_TITLE]"
-  - Topics: [KEY_TOPICS]
+- **Bachelor of Information Systems (S1)** (2024 - Present) - Universitas Pelita Harapan (UPH)
+  - Topics: Web Development (HTML, CSS, JavaScript), Database Management System & SQL, Programming Algorithms & Logic, Information Systems Analysis & Design, UI/UX Design Fundamentals, Software Development Life Cycle (SDLC)
+- **Vocational High School Diploma in Software Engineering (RPL)** (2020 - 2023) - SMK Negeri 6 Tangerang Selatan
+  - Topics: Software Engineering fundamentals, Web Programming, 6-Month Industrial Internship at PT eBdesk Teknologi
 
 ### Professional Experience
-<!-- List your roles, most recent first -->
-- **[JOB_TITLE]** ([START_DATE] - [END_DATE]) - **[COMPANY]** ([LOCATION])
-  - [KEY_RESPONSIBILITY_1]
-  - [KEY_RESPONSIBILITY_2]
-  - [KEY_ACHIEVEMENT]
+- **Scraper Operational** (2023 - Present) - **PT eBdesk Teknologi** (Tangerang Selatan, Banten, Indonesia)
+  - Developed and maintained web crawling engines using Python, Playwright, and Selenium for automated data collection.
+  - Optimized backend processing through asynchronous concurrency (Async/Await) in Python.
+  - Monitored crawling pipelines, ensuring data stability, schema conformance, and quality control across runs.
+  - Built internal automation engines for Linux Server command execution and automated real-time status reporting via Telegram API.
+  - Optimized more than 5 production scraping applications and engineered automated data quality validation systems.
+  - Contributed for 3 months as Data Engineer focused on data transformation and ETL pipelines.
+  - Developed internal web management tools using PHP & HTML to enhance operational workflows and team productivity.
 
 ### Technical Skills
-- **Primary:** [YOUR_PRIMARY_SKILLS]
-- **Secondary:** [YOUR_SECONDARY_SKILLS]
-- **Domain:** [YOUR_DOMAIN_EXPERTISE]
-- **Software:** [YOUR_TOOLS_AND_SOFTWARE]
+- **Primary:** Python (Async/Await, Web Scraping, Automation), PHP, Java, JavaScript, SQL
+- **Secondary:** Vue.js, Node.js, HTML5, CSS3
+- **Domain:** Web Scraping & Data Extraction, Backend Architecture & Automation, Linux Server Administration, Data Processing & ETL
+- **Software:** Playwright, Selenium, Docker, Kubernetes (monitoring with Lens), Elasticsearch & Kibana, Telegram Bot API, Git, Linux CLI
 
 ### Certifications
-<!-- List relevant certifications with dates -->
-- **[CERTIFICATION_NAME]** - [HOURS]h - completed [DATE]
+- None listed
 
 ### Publications
-<!-- List peer-reviewed publications, if any -->
-- [AUTHOR_LIST] ([YEAR]). [TITLE]. [JOURNAL].
+- None
 
 ### Awards
-<!-- List relevant awards, hackathons, competitions -->
-- [AWARD_NAME] - [EVENT] ([YEAR])
+- None
 
 ### Behavioral Profile
-<!-- Your behavioral assessment results (PI, DISC, Myers-Briggs, or self-assessment) -->
-- **[TRAIT_1]** - [DESCRIPTION]
-- **[TRAIT_2]** - [DESCRIPTION]
-- **Strengths:** [YOUR_STRENGTHS]
-- **Growth areas:** [YOUR_GROWTH_AREAS]
-- **Thrives in:** [YOUR_IDEAL_ENVIRONMENT]
+- **Analytical & Problem Solver** - Skilled in complex debugging, root-cause diagnosis, and engineering scalable technical solutions.
+- **Collaborative Communicator** - Bridges operational requirements with technical systems to ensure project milestones are delivered reliably.
+- **Fast Learner & Proactive** - Highly enthusiastic about exploring modern technologies, modern JavaScript stacks, and backend frameworks.
+- **Strengths:** Asynchronous backend programming, web automation & crawler engineering, Linux server management, data quality assurance, rapid adaptability.
+- **Growth areas:** Deepening cloud-native architecture (AWS/GCP), microservices orchestration, advanced frontend frameworks (Vue.js/React).
+- **Thrives in:** Collaborative, engineering-focused teams tackling high-volume data, backend automation, and scalable web services.
 
 ### What Excites You
-<!-- What motivates you professionally -->
-- [PASSION_1]
-- [PASSION_2]
+- Building robust data scraping engines and automation bots that solve real-world data bottlenecks.
+- Developing clean, scalable server-side APIs and backend web systems.
+- Exploring modern JavaScript and Python backend ecosystems.
 
 ### Target Sectors
-<!-- Industries and companies you're targeting -->
-- [SECTOR_1]: [EXAMPLE_COMPANIES]
-- [SECTOR_2]: [EXAMPLE_COMPANIES]
+- Software & Internet Services: Tech startups, SaaS companies, Data intelligence firms
+- Backend Development & Data Engineering: Roles in Backend Developer, Software Engineer, Web Scraper / Automation Engineer, Data Engineer
 
 ### Deal-breakers
-<!-- Hard constraints on job search. Language requirements are handled separately and
-automatically from your Languages table above - don't duplicate them here. -->
-- [DEALBREAKER_1]
-- [DEALBREAKER_2]
+- Roles requiring unannounced relocation without company support.
+- Non-technical purely administrative roles with no engineering or coding responsibilities.
 
 ## Repo Structure
 - `cv/` - LaTeX CV variants (moderncv template, banking style)
